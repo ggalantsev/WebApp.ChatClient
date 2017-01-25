@@ -18,10 +18,14 @@ public class Main {
 			while (true) {
 				String text = scanner.nextLine();
 				if (text.isEmpty()) continue;
-				Message m = new Message(login, text);
+				if (text.length()>4&&text.toLowerCase().substring(0,5).equals("room:")){
+					GetThread.setRoom(text.substring(5,text.length()));
+					System.out.println("Room changed to \""+text.substring(5,text.length())+"\"");
+					continue;
+				}
+				Message m = new Message(login, text, GetThread.getRoom());
 				int res = m.send(Utils.getURL() + "/add");
-
-				if (res != 200) { // 200 OK
+				if (res != 200 && res!=202) { // 200 OK
 					System.out.println("HTTP error occured: " + res);
 					return;
 				}

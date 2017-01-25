@@ -17,10 +17,12 @@ public class Message {
 	private String from;
 	private String to;
 	private String text;
+	private String room = "";
 
-	public Message(String from, String text) {
+	public Message(String from, String text, String room) {
 		this.from = from;
 		this.text = text;
+		this.room = room;
 	}
 
 	public String toJSON() {
@@ -58,7 +60,12 @@ public class Message {
 		try {
 			String json = toJSON();
 			os.write(json.getBytes(StandardCharsets.UTF_8));
-			return conn.getResponseCode();
+			int res = conn.getResponseCode();
+			if (res ==202) {
+				System.err.print(conn.getHeaderField("isOnline")==null?"":conn.getHeaderField("isOnline"));
+				System.err.println(conn.getHeaderField("getUsers")==null?"":conn.getHeaderField("getUsers"));
+			}
+			return res;
 		} finally {
 			os.close();
 		}
@@ -101,5 +108,13 @@ public class Message {
 
 	public void setText(String text) {
 		this.text = text;
+	}
+
+	public String getRoom() {
+		return room;
+	}
+
+	public void setRoom(String room) {
+		this.room = room;
 	}
 }

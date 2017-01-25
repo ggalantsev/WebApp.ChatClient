@@ -13,8 +13,8 @@ import java.time.ZoneOffset;
 
 public class GetThread implements Runnable {
     private final Gson gson;
-//    private int n;
     private String login;
+    private static String room = "";
 
     public GetThread() {
         gson = new GsonBuilder().create();
@@ -28,10 +28,11 @@ public class GetThread implements Runnable {
     @Override
     public void run() {
         try {
-            long seconds = LocalDateTime.now().toInstant(ZoneOffset.UTC).getEpochSecond()-3600;
-            // At start get messages for last hour
+            long seconds = LocalDateTime.now()
+                    .toInstant(ZoneOffset.UTC)
+                    .getEpochSecond()-3600; // At start get messages for last hour
             while ( ! Thread.interrupted()) {
-                URL url = new URL(com.company.Utils.getURL() + "/get?from=" + seconds);
+                URL url = new URL(com.company.Utils.getURL() + "/get?from=" + seconds + "&room="+room);
                 HttpURLConnection http = (HttpURLConnection) url.openConnection();
 
                 InputStream is = http.getInputStream();
@@ -51,7 +52,6 @@ public class GetThread implements Runnable {
                 } finally {
                     is.close();
                 }
-
                 Thread.sleep(1000);
             }
         } catch (SocketException e) {
@@ -67,5 +67,13 @@ public class GetThread implements Runnable {
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    public static String getRoom() {
+        return room;
+    }
+
+    public static void setRoom(String room) {
+        GetThread.room = room;
     }
 }
